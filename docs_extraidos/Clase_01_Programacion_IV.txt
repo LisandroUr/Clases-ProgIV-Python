@@ -1,0 +1,290 @@
+Clase 1 (Unidad 1) — Fundamentos, entorno de desarrollo y arquitectura cliente-servidor
+Duración total: 4 horas | Proyecto: primeros pasos de TaskFlow
+Parte 0 — Antes de Django: fundamentos de Python (35 min)
+0.1 Objetivo de esta parte
+Antes de instalar nada, nos aseguramos de que todos manejamos el vocabulario mínimo de Python: qué es la consola/terminal, qué es una variable, cómo se imprime algo en pantalla y qué son los tipos de datos básicos. Si ya conocen esto, sirve como repaso rápido; si no, es la base sin la cual el resto de la clase no se entiende.
+0.2 ¿Qué es la consola/terminal?
+La terminal (también llamada consola o línea de comandos) es un programa que permite escribirle instrucciones de texto a la computadora, en vez de hacer clic en íconos. Todo lo que hacemos en esta materia —crear carpetas, instalar paquetes, correr el servidor— lo vamos a hacer escribiendo comandos ahí.
+En VS Code, se abre desde el menú Terminal → New Terminal, o con el atajo ` Ctrl +  `` (comilla invertida).
+Se abre "dentro" de la carpeta del proyecto que tengan abierta en VS Code: todo comando que escriban se ejecuta teniendo esa carpeta como referencia.
+Un comando muy usado para saber en qué carpeta estamos parados:
+pwd
+(en Windows PowerShell, el equivalente es simplemente escribir pwd también, ya funciona igual).
+0.3 El intérprete de Python interactivo
+Python tiene un modo "interactivo": escriben una línea de código, presionan Enter, y ven el resultado inmediatamente, sin necesidad de crear un archivo. Es ideal para probar cosas chiquitas.
+En la terminal:
+python3
+(en Windows suele ser simplemente python). Van a ver un prompt con tres signos >>> esperando que escriban algo. Prueben, línea por línea, presionando Enter después de cada una:
+2 + 2
+print("Hola, TaskFlow")
+Para salir del modo interactivo: exit() o Ctrl+D (Mac/Linux) / Ctrl+Z y Enter (Windows).
+💡 Nota del docente
+Este modo interactivo es distinto a ejecutar un archivo .py (que es lo que vamos a hacer la mayor parte de la materia). Sirve para probar ideas sueltas rápido; el código "real" del proyecto siempre va a vivir en archivos.
+0.4 Variables
+Una variable es un nombre que usamos para referirnos a un valor guardado en la memoria de la computadora, para poder usarlo más adelante sin tener que volver a escribirlo.
+nombre = "TaskFlow"
+version = 1
+activo = True
+A la izquierda del = va el nombre que elegimos (debe empezar con letra o _, sin espacios, en minúsculas por convención en Python: nombre_completo, no NombreCompleto).
+A la derecha va el valor.
+El = en programación no es una igualdad matemática: es una asignación — "guardá este valor bajo este nombre".
+0.5 Tipos de datos básicos
+entero = 42                 # int: número entero
+decimal = 3.14               # float: número con coma/punto decimal
+texto = "hola"                # str: cadena de texto (string)
+booleano = True               # bool: verdadero o falso
+lista = [1, 2, 3]              # list: colección ordenada y modificable
+diccionario = {"clave": "valor"}  # dict: pares clave-valor
+Para saber el tipo de una variable en cualquier momento:
+type(entero)
+0.6 Imprimir en pantalla
+print() es la función que muestra algo en la consola. Es la principal herramienta para "ver qué está pasando" dentro de un programa mientras lo escribimos.
+print("Hola")
+print(nombre)
+print("El proyecto es", nombre, "versión", version)
+Una forma más prolija de combinar texto y variables son los f-strings (cadenas formateadas), que vamos a usar todo el curso:
+print(f"El proyecto es {nombre}, versión {version}")
+La f antes de las comillas le dice a Python: "dentro de esta cadena, todo lo que esté entre llaves {} es una variable, reemplazala por su valor".
+0.7 Operadores y condicionales, repaso exprés
+stock = 5
+if stock < 10:
+    print("Stock bajo")
+else:
+    print("Stock normal")
+💡 Nota del docente
+La indentación (los espacios al principio de la línea print("Stock bajo")) no es estética en Python: es obligatoria y define qué líneas pertenecen a qué bloque (al if, al else, a una función, etc.). Usen 4 espacios de forma consistente; VS Code lo hace automáticamente al presionar Enter dentro de un bloque.
+Con esto alcanza como base. Todo lo que sigue en la materia son estructuras más grandes construidas sobre estas mismas ideas: variables, tipos, print para inspeccionar, e indentación para bloques.
+Parte 1 — Arquitectura cliente-servidor y API (40 min)
+1.1 Introducción
+Ya vimos cómo correr instrucciones sueltas de Python. Ahora vamos a entender qué problema resuelve un backend, que es lo que vamos a construir el resto de la materia. Cuando usan una app de tareas desde el celular, la app no "tiene" los datos: se los pide a un servidor. Ese servidor es un programa que corre 24 horas, escucha peticiones por red y responde con datos.
+Analogía: el cliente (navegador, app móvil) es como un comensal que hace un pedido; el servidor es la cocina. El menú con las opciones disponibles y el formato en que hay que pedir (y en que llega la comida) es la API (Application Programming Interface, interfaz de programación de aplicaciones).
+1.2 El ciclo petición-respuesta
+El cliente arma una petición HTTP: un método (GET, POST, PUT, DELETE — cada uno con un significado, que vemos en detalle en la Clase 4), una URL (por ejemplo /api/tasks/) y, a veces, un cuerpo (body) con datos, típicamente en formato JSON.
+El servidor la recibe, ejecuta lógica (por ejemplo, consulta una base de datos) y arma una respuesta: un código de estado (200, 201, 404, 500...) y, normalmente, un cuerpo también en JSON.
+El cliente interpreta esa respuesta y actualiza lo que el usuario ve en pantalla.
+💡 Nota del docente
+No confundan "página web" con "API". Una página HTML está pensada para que la lea una persona en un navegador (con estilos, botones, imágenes). Una API devuelve datos "pelados" (JSON) pensados para que los procese código: otra app, un frontend, un script.
+1.3 ¿Qué es JSON?
+JSON (JavaScript Object Notation) es un formato de texto para representar datos estructurados, muy parecido a un diccionario de Python:
+{
+  "titulo": "Diseñar wireframes",
+  "prioridad": "alta",
+  "completada": false
+}
+Es el formato casi universal en el que las APIs modernas intercambian información, independientemente del lenguaje en el que estén escritas cliente y servidor.
+1.4 Vocabulario esencial: framework, frontend, backend, ORM
+Antes de seguir, dejamos definidos con precisión algunos términos que vamos a usar constantemente durante las 12 clases:
+Backend: la parte de una aplicación que corre en un servidor, no en la computadora del usuario final. Se encarga de la lógica de negocio, el acceso a datos y la seguridad. Es lo que vamos a construir en esta materia con Python y Django.
+Frontend: la parte de la aplicación que corre en el dispositivo del usuario (navegador, app móvil) y con la que este interactúa directamente (botones, formularios, pantallas). En esta materia no construimos frontend — construimos la API que un frontend (hecho, por ejemplo, con React, o una app móvil) consumiría. Cuando lo necesitemos para probar algo visualmente, usamos herramientas ya existentes (la Browsable API de DRF, GraphiQL, Postman), nunca escribimos una interfaz de usuario propia.
+Framework: una biblioteca de código que impone una estructura y provee piezas ya resueltas (ruteo de URLs, acceso a base de datos, seguridad básica) para que no tengamos que reinventarlas en cada proyecto. Django es un framework de backend; a diferencia de una simple librería (que uno importa y usa donde quiere), un framework generalmente "llama" a nuestro código según sus propias convenciones (por eso la estructura de carpetas que generó django-admin startproject no es arbitraria).
+ORM (Object-Relational Mapping, mapeo objeto-relacional): la capa que traduce clases de Python (nuestros models.Model) a tablas de una base de datos relacional, y viceversa, para que escribamos Task.objects.all() en vez de SELECT * FROM core_task; en SQL directo. Empezamos a usarlo en la Clase 2.
+Base de datos relacional: un sistema que guarda datos en tablas con filas y columnas, relacionadas entre sí (como vamos a hacer con Project y Task desde la Clase 3). SQLite (que usamos hasta la Unidad 5) y PostgreSQL (que usamos en producción, Clase 12) son ambas relacionales.
+Servidor: una computadora (física o virtual) que corre un programa escuchando peticiones de red, 24 horas, para responderlas. En desarrollo, "el servidor" es su propia computadora corriendo runserver; en producción (Clase 12), es una máquina de una plataforma cloud.
+Endpoint: una URL específica de una API asociada a una acción concreta (ej. GET /api/tasks/). Cada endpoint que agreguemos clase a clase es una nueva "puerta de entrada" a una funcionalidad de TaskFlow.
+1.5 Por qué Django
+Vamos a construir toda la materia sobre Python + Django, salvo excepciones inevitables (protocolos, estándares, formatos de configuración, que iremos señalando explícitamente cuando aparezcan). Django es un framework "con pilas incluidas" (batteries included): trae de fábrica un ORM, un sistema de administración web, autenticación de usuarios, y una estructura de proyecto clara y estandarizada. Sobre él vamos a usar Django REST Framework (DRF), un paquete adicional especializado en construir APIs.
+💡 Nota del docente
+Sobre el costo de las herramientas: todo lo que usamos en esta materia es software libre y gratuito: Python (código abierto, licencia PSF), Django y DRF (licencia BSD), VS Code (gratuito, con partes de código abierto), Git (código abierto, GPL), GitHub (cuenta gratuita, suficiente para toda la materia), SQLite/PostgreSQL/Redis (todos de código abierto). Cuando en alguna clase futura usemos un servicio con capa gratuita limitada en vez de 100% open source (por ejemplo, la plataforma de despliegue en la nube de la Clase 12), lo vamos a señalar explícitamente y vamos a mencionar la alternativa de código abierto equivalente.
+Parte 2 — Configuración del entorno de desarrollo, paso a paso (85 min)
+2.1 Objetivo
+Dejar instalado y funcionando, en la carpeta de cada uno, el entorno que van a usar durante las 12 clases: Python, un entorno virtual, VS Code y el primer proyecto Django. Vamos a detallar cada comando, en qué carpeta se ejecuta, y qué hace exactamente.
+2.2 Paso 0: instalar un editor de código (VS Code)
+Vamos a usar Visual Studio Code (VS Code) durante toda la materia: es gratuito, corre igual en Windows, Linux y Mac, y tiene una terminal integrada (la que usamos en cada clase). Se descarga desde code.visualstudio.com — el instalador detecta automáticamente el sistema operativo. Si ya lo tienen instalado, pueden saltar este paso.
+💡 Nota del docente
+VS Code no es de código abierto en su totalidad (el ejecutable que se distribuye incluye algunas extensiones propietarias de Microsoft), pero es gratuito y ampliamente usado en la industria. Si prefieren una alternativa 100% de código abierto, pueden usar VSCodium (vscodium.com), que es exactamente el mismo editor compilado sin esos agregados — todo lo explicado en esta materia funciona igual en ambos.
+Después de instalarlo, agreguen la extensión oficial "Python" (de Microsoft) desde el ícono de extensiones en la barra lateral izquierda (el ícono de cuadrados): habilita autocompletado y detección automática del entorno virtual.
+2.3 Paso 1: verificar la versión de Python instalada
+En la terminal (no importa en qué carpeta estén parados para este comando puntual):
+python3 --version
+Necesitamos Python 3.10 o superior. Si el comando no existe o la versión es muy vieja:
+Windows: instalen desde python.org/downloads, marcando la casilla "Add Python to PATH" durante la instalación (crucial: sin esto, la terminal no va a encontrar el comando python).
+Mac: desde python.org/downloads, o con Homebrew (brew install python).
+Linux (Debian/Ubuntu): sudo apt update && sudo apt install python3 python3-venv python3-pip.
+2.4 Paso 2: elegir/crear la carpeta de trabajo de la materia
+Decidan un lugar fijo en su computadora donde va a vivir todo el material de la materia (por ejemplo, Documentos/programacion4/ o ~/dev/programacion4/). Desde la terminal:
+cd Documentos
+mkdir programacion4
+cd programacion4
+cd (change directory) cambia la carpeta en la que está "parada" la terminal; mkdir (make directory) crea una carpeta nueva. A partir de acá, todos los comandos de esta clase asumen que están parados dentro de `programacion4/`, salvo que se indique lo contrario.
+2.5 Paso 3: crear la carpeta del proyecto y el entorno virtual
+Creen la carpeta específica del proyecto y entren en ella:
+mkdir taskflow
+cd taskflow
+A partir de este punto, `taskflow/` es la raíz de todo el proyecto durante las 12 clases: todos los comandos y rutas de archivo que demos de acá en más son relativos a esta carpeta, salvo aviso explícito.
+Creen un entorno virtual: un espacio aislado, dentro de la carpeta taskflow/venv/, con su propia copia de Python y sus propias librerías instaladas, separado de cualquier otro proyecto de la computadora.
+python3 -m venv venv
+Desglosando el comando: python3 invoca al intérprete; -m venv le dice "ejecutá el módulo venv, incluido en la librería estándar"; el segundo venv es el nombre de la carpeta que se va a crear (por convención se llama igual que el módulo, pero podría llamarse distinto). Al terminar, van a ver una nueva carpeta taskflow/venv/ con archivos internos de Python.
+Actívenlo. Este paso hay que repetirlo cada vez que abran una terminal nueva para trabajar en el proyecto (no es "una sola vez"):
+En Linux/Mac:
+source venv/bin/activate
+En Windows (PowerShell):
+venv\Scripts\Activate.ps1
+En Windows (CMD, símbolo del sistema clásico):
+venv\Scripts\activate.bat
+Al activarse correctamente, el prompt de la terminal va a mostrar (venv) al principio de la línea, algo como:
+(venv) usuario@computadora taskflow %
+💡 Nota del docente
+¿Por qué un entorno virtual? Sin él, todo lo que instalen con pip queda "global" en la computadora, compartido por todos los proyectos. Si el proyecto A necesita Django 4 y el proyecto B necesita Django 5, sin entornos virtuales entrarían en conflicto. Con venv, cada proyecto tiene su propia carpeta venv/ con sus propias versiones, totalmente aisladas.
+💡 Nota del docente
+Si en algún momento ven que los comandos pip install de algo no aparecen disponibles al correr el proyecto, el motivo más común es que se olvidaron de activar el entorno virtual en esa terminal. Verifíquenlo mirando si aparece (venv) en el prompt.
+2.6 Paso 4: instalar Django y congelar dependencias
+Con el entorno activado ((venv) visible), parados en taskflow/:
+pip install django djangorestframework python-dotenv
+pip es el gestor de paquetes de Python: descarga cada librería (y sus dependencias) desde el repositorio oficial (PyPI) e instala todo dentro de taskflow/venv/. Instalamos tres paquetes: django (el framework), djangorestframework (DRF, que usaremos desde la Unidad 2) y python-dotenv (para leer variables de entorno, Parte 3 de hoy).
+Ahora "congelamos" exactamente qué se instaló y en qué versión:
+pip freeze > requirements.txt
+Esto crea el archivo taskflow/requirements.txt con una lista como:
+Django==5.0.6
+djangorestframework==3.15.1
+python-dotenv==1.0.1
+asgiref==3.8.1
+sqlparse==0.5.0
+requirements.txt es el archivo que le permite a cualquier otra persona (o a un servidor de despliegue, en la Clase 12) instalar exactamente las mismas versiones con un solo comando: pip install -r requirements.txt. Ábranlo en VS Code y revisen su contenido para entender qué se instaló.
+2.7 Paso 5: crear el proyecto Django
+Seguimos parados en taskflow/, con el entorno activado:
+django-admin startproject config .
+Desglosando: django-admin es una herramienta de línea de comandos que se instaló junto con Django; startproject crea la estructura base de un proyecto; config es el nombre que le damos al paquete de configuración principal (podría llamarse distinto, pero usamos config durante toda la materia); el punto final `.` le indica "creá los archivos acá mismo, en la carpeta actual", en vez de crear una subcarpeta adicional.
+Ahora creamos nuestra primera app (un módulo con una responsabilidad concreta dentro del proyecto):
+python manage.py startapp core
+manage.py es un script que Django generó en el paso anterior, y que vamos a usar constantemente durante toda la materia para ejecutar tareas del proyecto (correr el servidor, crear migraciones, etc.). startapp core crea la carpeta taskflow/core/ con la estructura básica de una app Django.
+Observen la estructura completa generada hasta ahora, dentro de taskflow/:
+taskflow/
+  venv/                    <- entorno virtual (no se sube a Git, Parte 3)
+  requirements.txt
+  manage.py
+  config/
+    __init__.py
+    settings.py            <- toda la configuración del proyecto
+    urls.py                <- "mapa" principal de URLs
+    wsgi.py
+    asgi.py
+  core/
+    migrations/
+    __init__.py
+    admin.py
+    apps.py
+    models.py              <- acá van a vivir nuestros modelos de datos
+    views.py               <- acá van a vivir nuestras vistas
+    tests.py
+2.8 Paso 6: registrar la app y correr el servidor por primera vez
+Abran taskflow/config/settings.py en VS Code. Busquen la lista INSTALLED_APPS (cerca del principio del archivo) y agreguen dos líneas, dejando el resto igual:
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "core",
+]
+rest_framework es el paquete de DRF que instalamos en el Paso 4 (lo vamos a usar recién a partir de la Unidad 2, pero lo dejamos registrado desde ahora); core es la app que creamos en el Paso 5. Sin este registro, Django no reconoce que core forma parte del proyecto.
+Django trae, de fábrica, algunas tablas internas necesarias (por ejemplo, para el sistema de usuarios y el panel de administración). Hay que crearlas en la base de datos con:
+python manage.py migrate
+Este comando lee las "migraciones" (instrucciones de creación/modificación de tablas) que Django ya trae incorporadas y las aplica sobre una base de datos SQLite que se crea automáticamente como el archivo taskflow/db.sqlite3. SQLite es una base de datos simple que vive en un único archivo, ideal para desarrollo (en la Unidad 5 la reemplazamos por PostgreSQL para producción).
+Levanten el servidor de desarrollo:
+python manage.py runserver
+La terminal va a quedar "colgada" mostrando logs — es normal, significa que el servidor está corriendo y escuchando peticiones. Para detenerlo: Ctrl + C. Mientras esté corriendo, no pueden usar esa misma terminal para otra cosa; si necesitan ejecutar otro comando, abran una segunda terminal (en VS Code: ícono + en el panel de terminal) y actívenle el entorno virtual también a esa nueva terminal (Paso 3).
+Abran http://127.0.0.1:8000/ en el navegador. 127.0.0.1 (también llamado localhost) es la dirección con la que una computadora se refiere a sí misma; :8000 es el puerto en el que Django decidió escuchar por defecto. Deberían ver la página de bienvenida de Django ("The install worked successfully!").
+Parte 3 — Configuración por entornos y primer endpoint (60 min)
+3.1 Variables de entorno: qué son y por qué las usamos
+Una variable de entorno es un valor que vive fuera del código fuente, disponible para el programa en el momento de ejecutarse. Las usamos para separar la configuración (que cambia según dónde corra el proyecto: en la computadora de cada uno, en un servidor de pruebas, en producción) del código (que es el mismo en todos lados).
+Nunca escribimos secretos (claves, contraseñas de base de datos) directamente en un archivo .py, porque ese archivo va a terminar subido a GitHub (Clase de Git y GitHub) y quedaría expuesto públicamente.
+En la raíz del proyecto (taskflow/.env, al mismo nivel que manage.py), creen un archivo llamado exactamente .env:
+DEBUG=True
+SECRET_KEY=cambien-esta-clave-en-produccion
+💡 Nota del docente
+En VS Code, para crear un archivo que empieza con un punto: clic derecho sobre la carpeta taskflow en el explorador de archivos → New File → escriben .env como nombre completo.
+En taskflow/config/settings.py, arriba de todo el archivo (antes de que se use SECRET_KEY más abajo), agreguen:
+from dotenv import load_dotenv
+import os
+ 
+load_dotenv()
+ 
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+load_dotenv() busca el archivo .env en la carpeta del proyecto y carga sus valores en variables de entorno del sistema operativo (temporalmente, mientras corre el proceso). os.getenv("SECRET_KEY") los lee desde ahí. Ya existían líneas SECRET_KEY = "..." y DEBUG = True generadas automáticamente por Django: reemplácenlas por estas.
+💡 Nota del docente
+Esta separación entre configuración (en .env) y código (en settings.py) es la que después nos va a permitir tener valores distintos en desarrollo, staging y producción — lo retomamos en detalle en la Unidad 5 (Clase 12).
+3.2 Primer endpoint: health check
+Vamos a escribir a mano —sin DRF todavía, para entender qué hace Django "por debajo" antes de que DRF nos automatice el resto desde la Clase 3— el endpoint más simple posible: uno que solo confirma que el servidor está vivo.
+Abran taskflow/core/views.py (ya existe, vacío salvo un comentario) y agreguen:
+from django.http import JsonResponse
+ 
+def health_check(request):
+    return JsonResponse({"status": "ok", "service": "TaskFlow API"})
+request es un objeto que Django arma automáticamente con toda la información de la petición HTTP entrante (método, headers, body, etc.) y se lo pasa a cada vista. JsonResponse es una clase de Django que convierte un diccionario de Python a JSON y arma la respuesta HTTP completa (incluyendo el header Content-Type: application/json).
+Django necesita un mapa de URLs que le diga qué función ejecutar para cada dirección. Creen el archivo taskflow/core/urls.py (no existe todavía, hay que crearlo):
+from django.urls import path
+from . import views
+ 
+urlpatterns = [
+    path("health/", views.health_check, name="health_check"),
+]
+from . import views importa el archivo views.py de esta misma carpeta (core/) — el punto significa "la app actual". path("health/", ...) asocia la URL health/ con la función health_check; name="health_check" le da un nombre interno de referencia (útil más adelante para generar URLs dinámicamente, sin escribirlas a mano).
+Este mapa de core/urls.py todavía no está conectado al proyecto. Abran taskflow/config/urls.py (este sí ya existe) y modifíquenlo así:
+from django.contrib import admin
+from django.urls import path, include
+ 
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/", include("core.urls")),
+]
+include("core.urls") le dice a Django: "todo lo que empiece con api/ seguí buscándolo dentro del archivo core/urls.py". Por eso el endpoint final va a quedar disponible en api/health/ (la suma de api/ + health/).
+Guarden ambos archivos. Si el servidor seguía corriendo desde la Parte 2, Django detecta los cambios automáticamente y se reinicia solo (van a ver un mensaje en la terminal). Si lo habían detenido, vuelvan a correr python manage.py runserver desde taskflow/.
+Abran en el navegador http://127.0.0.1:8000/api/health/. Deberían ver exactamente el texto {"status": "ok", "service": "TaskFlow API"}.
+Parte 4 — Guardar el avance en Git y GitHub (30 min)
+4.1 Por qué esta sección va a repetirse en cada clase
+A partir de hoy, cada clase termina guardando el trabajo con Git y subiéndolo a GitHub. El detalle completo de qué es Git, qué es GitHub, y qué significa cada comando, está en el documento aparte "Git y GitHub" — es lectura obligatoria antes de este paso si todavía no lo leyeron. Acá aplicamos ese flujo, ya de forma concreta, sobre el proyecto TaskFlow.
+4.2 Inicializar el repositorio (solo hoy, una vez)
+Parados en taskflow/ (la raíz del proyecto, donde está manage.py):
+git init
+Esto crea la carpeta oculta taskflow/.git/, donde Git va a guardar todo el historial de ahora en más.
+4.3 Crear el `.gitignore` antes del primer commit
+Es fundamental hacer esto antes de agregar archivos, para no subir por error el entorno virtual ni el .env con secretos. Creen taskflow/.gitignore:
+venv/
+.env
+__pycache__/
+*.pyc
+db.sqlite3
+4.4 Primer commit
+git status
+Revisen la lista: no debería aparecer venv/ ni .env (si aparecen, revisen que el .gitignore esté bien escrito y guardado). Luego:
+git add .
+git commit -m "Setup inicial de TaskFlow: Django + DRF + health check"
+4.5 Subir a GitHub
+Entren a github.com, creen un repositorio nuevo llamado taskflow, vacío (sin README ni .gitignore generados por GitHub).
+Conecten su repositorio local con el remoto (reemplacen la URL por la que les da GitHub):
+git remote add origin https://github.com/su-usuario/taskflow.git
+git branch -M main
+git push -u origin main
+Recarguen la página del repositorio en GitHub: deberían ver todos los archivos del proyecto (excepto venv/, .env y db.sqlite3, que quedaron ignorados a propósito).
+Parte 5 — Cierre y tarea
+5.1 Repaso de lo construido hoy
+Fundamentos de Python: variables, tipos de datos, print, condicionales.
+Entorno virtual aislado con venv, activado correctamente.
+Proyecto Django config con la app core.
+Configuración separada en .env (principio de "no hardcodear secretos").
+Primer endpoint funcionando: GET /api/health/.
+Repositorio Git inicializado y sincronizado con GitHub.
+5.2 Tarea para la casa
+Agreguen un segundo endpoint GET /api/health/version/ que devuelva {"version": "0.1.0"} (van a necesitar otra función en views.py y otra línea en core/urls.py).
+Investiguen la diferencia entre los métodos HTTP GET y POST: ¿por qué GET no debería usarse para modificar datos?
+Guarden ese avance repitiendo el flujo de la Parte 4.4 (git add ., git commit -m "...", git push) — sin volver a hacer git init ni git remote add, eso fue una única vez.
+5.3 Próxima clase
+Clase 2: vamos a trabajar con archivos (CSV/JSON/XML) y un management command de Django que importe datos iniciales de tareas desde distintos "proveedores" de datos — el primer paso real de TaskFlow.
+Diccionario de términos de esta clase
+API (Application Programming Interface): conjunto de reglas que permite que dos programas se comuniquen entre sí; en nuestro caso, entre un cliente y nuestro backend.
+ASGI/WSGI: formas en que un servidor Python se comunica con un framework web; Django trae ambas por defecto (usamos ASGI recién desde la Clase 9).
+Backend: la parte de la aplicación que corre en el servidor.
+Consola/terminal: programa para darle instrucciones de texto a la computadora.
+Endpoint: una URL puntual de una API asociada a una acción concreta.
+Entorno virtual (venv): carpeta aislada con su propia instalación de paquetes de Python, independiente de otros proyectos.
+Framework: biblioteca de código que impone una estructura y resuelve tareas comunes (Django, en nuestro caso).
+Frontend: la parte de la aplicación que corre en el dispositivo del usuario.
+f-string: forma de Python de insertar variables dentro de un texto, con el prefijo f antes de las comillas.
+JSON: formato de texto estándar para representar datos estructurados.
+ORM: capa que traduce clases de Python a tablas de una base de datos, y viceversa.
+`pip`: el gestor de paquetes de Python, usado para instalar librerías.
+Variable: nombre que referencia un valor guardado en memoria.
+Variable de entorno: valor de configuración que vive fuera del código fuente (archivo .env).

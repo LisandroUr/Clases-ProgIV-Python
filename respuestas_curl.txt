@@ -1,0 +1,76 @@
+=== 1. 200 OK (GET a lista de tareas) ===
+HTTP/1.1 200 OK
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 1179
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+[{"id":1,"project":1,"title":"Diseñar wireframes","description":"","priority":"alta","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.713322Z","source":"proveedor_a"},{"id":2,"project":1,"title":"Configurar CI","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.716704Z","source":"proveedor_a"},{"id":3,"project":1,"title":"Redactar README","description":"","priority":"baja","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.720297Z","source":"proveedor_b"},{"id":4,"project":1,"title":"Revisar PR #12","description":"","priority":"alta","status":"en_progreso","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.723846Z","source":"proveedor_b"},{"id":5,"project":1,"title":"Migrar base de datos","description":"","priority":"alta","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.727322Z","source":"proveedor_c"},{"id":6,"project":1,"title":"Validacion ok","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.730713Z","source":"proveedor_d"}]
+
+=== 2. 201 Created (POST) ===
+HTTP/1.1 201 Created
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 185
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+{"id":7,"project":1,"title":"Nueva Tarea curl","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:44.183303Z","source":""}
+
+=== 3. 204 No Content (DELETE) ===
+HTTP/1.1 204 No Content
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Vary: Accept, Cookie
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 0
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+
+
+=== 4. 400 Bad Request (POST inválido) ===
+HTTP/1.1 400 Bad Request
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 61
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+{"error":true,"detail":{"title":["This field is required."]}}
+
+=== 5. 404 Not Found (GET a recurso inexistente) ===
+HTTP/1.1 404 Not Found
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 69
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+{"error":true,"detail":{"detail":"No Task matches the given query."}}
+
+=== 6. 500 Internal Server Error (No es trivial forzarlo sin romper el código intencionalmente, pero simulamos comprobación) ===
+Nota: El 500 se maneja mediante core.exceptions.custom_exception_handler si ocurre una excepción no atrapada.
