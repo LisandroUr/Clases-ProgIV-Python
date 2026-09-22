@@ -18,7 +18,8 @@ class Command(BaseCommand):
     help = "Importa tareas desde múltiples proveedores (JSON, CSV, XML)"
 
     def handle(self, *args, **options):
-        # Crear un proyecto por defecto para poder importar (ya que ahora Project es obligatorio)
+        """Punto de entrada del comando."""
+        # Creamos proyecto por defecto porque ahora es obligatorio
         self.default_project, _ = Project.objects.get_or_create(
             name="Proyecto Importado",
             description="Proyecto por defecto para tareas importadas"
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Importación finalizada: {total} tareas cargadas"))
 
     def _import_json(self, path, source):
+        """Carga tareas desde JSON."""
         count = 0
         try:
             with open(path, encoding="utf-8") as f:
@@ -44,6 +46,7 @@ class Command(BaseCommand):
         return count
 
     def _import_csv(self, path, source):
+        """Carga tareas desde CSV."""
         count = 0
         try:
             with open(path, encoding="utf-8") as f:
@@ -56,6 +59,7 @@ class Command(BaseCommand):
         return count
 
     def _import_xml(self, path, source):
+        """Carga tareas desde XML."""
         count = 0
         try:
             tree = ET.parse(path)

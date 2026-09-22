@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Project(models.Model):
+    """Agrupa varias tareas bajo un mismo objetivo."""
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,6 +19,7 @@ class Tag(models.Model):
 
 
 class Task(models.Model):
+    """Representa una tarea concreta dentro de un proyecto."""
     PRIORITY_CHOICES = [("baja", "Baja"), ("media", "Media"), ("alta", "Alta")]
     STATUS_CHOICES = [
         ("pendiente", "Pendiente"),
