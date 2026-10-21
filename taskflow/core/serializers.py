@@ -1,6 +1,7 @@
 from datetime import date
 from rest_framework import serializers
 from .models import Project, Task, Tag
+from .services import HolidayService
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -11,13 +12,19 @@ class TagSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+    due_on_holiday = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
         fields = [
-            "id", "project", "title", "description",
-            "priority", "status", "due_date", "tags", "created_at", "source"
+            "id", "project", "title", "description", "priority",
+            "status", "due_date", "due_on_holiday", "tags", "created_at",
         ]
+
+    def get_due_on_holiday(self, obj):
+        if not obj.due_date:
+            return False
+        return HolidayService.is_holiday(obj.due_date)
 
     def validate_due_date(self, value):
         """Impide cargar fechas límite en el pasado."""

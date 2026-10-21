@@ -1,37 +1,46 @@
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Project, Task
+
+from .models import Project
+from .repositories import TaskRepository
 from .serializers import ProjectSerializer, TaskSerializer
+from .services import TaskService, ProjectService
 
 
 def health_check(request):
-    """Endpoint básico para verificar que la API está viva."""
     return JsonResponse({"status": "ok", "service": "TaskFlow API"})
-
-# Clase 1: Tarea para la casa
-def health_check_version(request):
-    """Devuelve la versión actual de la API."""
-    return JsonResponse({"version": "0.1.0"})
-
-# Clase 3: Tarea para la casa (Implementación manual con get_object_or_404)
-@api_view(["GET"])
-def project_detail(request, project_id):
-    """Devuelve un único proyecto, implementado de forma manual."""
-    project = get_object_or_404(Project, id=project_id)
-    serializer = ProjectSerializer(project)
-    return Response(serializer.data)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    """CRUD completo para los proyectos."""
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().order_by("id")
     serializer_class = ProjectSerializer
+
+    @action(detail=True, methods=["get"])
+    def summary(self, request, pk=None):
+        project = self.get_object()
+        data = ProjectService.project_summary(project)
+        return Response(data)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    """CRUD completo para las tareas, optimizado con prefetch/select_related."""
-    queryset = Task.objects.select_related("project").prefetch_related("tags").all()
+    queryset = TaskRepository.get_queryset()
     serializer_class = TaskSerializer
+    filterset_fields = ["status", "priority", "project"]
+    ordering_fields = ["due_date", "created_at", "priority"]
+    search_fields = ["title", "description"]
+
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        task = self.get_object()
+        TaskService.mark_completed(task)
+        return Response(self.get_serializer(task).data)
+
+    @action(detail=False, methods=["get"])
+    def overdue(self, request):
+        tasks = TaskService.tasks_overdue(self.get_queryset())
+        page = self.paginate_queryset(tasks)
+        if page is not None:
+            return self.get_paginated_response(self.get_serializer(page, many=True).data)
+        return Response(self.get_serializer(tasks, many=True).data)
