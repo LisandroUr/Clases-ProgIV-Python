@@ -1,0 +1,8 @@
+project-includes = [
+    "**/*.py*",
+]
+python-interpreter-path = ".venv/bin/python"
+site-packages-path = [
+    ".venv/lib/python3.14/site-packages"
+]
+enable-fallback-search-path = true

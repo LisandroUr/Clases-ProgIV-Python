@@ -1,63 +1,76 @@
-================================================================================
-REGISTRO DE CÓDIGOS DE ESTADO HTTP CON CURL - TASKFLOW API
-(Resolución Tarea Clase 4 / Clase 4b)
-================================================================================
+=== 1. 200 OK (GET a lista de tareas) ===
+HTTP/1.1 200 OK
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 1179
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
 
-CASO 200 OK
-Comando: curl -i http://127.0.0.1:8000/api/tasks/2/
-Primera línea: HTTP/1.1 200 OK
-Cuerpo:
-{"id":2,"project":1,"title":"Configurar CI","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.716704Z","source":"proveedor_a"}
-Observación: Respuesta exitosa al solicitar una tarea existente mediante GET.
+[{"id":1,"project":1,"title":"Diseñar wireframes","description":"","priority":"alta","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.713322Z","source":"proveedor_a"},{"id":2,"project":1,"title":"Configurar CI","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.716704Z","source":"proveedor_a"},{"id":3,"project":1,"title":"Redactar README","description":"","priority":"baja","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.720297Z","source":"proveedor_b"},{"id":4,"project":1,"title":"Revisar PR #12","description":"","priority":"alta","status":"en_progreso","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.723846Z","source":"proveedor_b"},{"id":5,"project":1,"title":"Migrar base de datos","description":"","priority":"alta","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.727322Z","source":"proveedor_c"},{"id":6,"project":1,"title":"Validacion ok","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:32.730713Z","source":"proveedor_d"}]
 
---------------------------------------------------------------------------------
+=== 2. 201 Created (POST) ===
+HTTP/1.1 201 Created
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 185
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
 
-CASO 201 Created
-Comando: curl -i -X POST http://127.0.0.1:8000/api/tasks/ -H "Content-Type: application/json" -d '{"project": 1, "title": "Nueva Tarea curl"}'
-Primera línea: HTTP/1.1 201 Created
-Cuerpo:
-{"id":18,"project":1,"title":"Nueva Tarea curl","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-30T18:20:12.541667Z","source":""}
-Observación: Creación exitosa de un nuevo recurso mediante POST con campos requeridos válidos.
+{"id":7,"project":1,"title":"Nueva Tarea curl","description":"","priority":"media","status":"pendiente","due_date":null,"tags":[],"created_at":"2026-09-21T19:04:44.183303Z","source":""}
 
---------------------------------------------------------------------------------
+=== 3. 204 No Content (DELETE) ===
+HTTP/1.1 204 No Content
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Vary: Accept, Cookie
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 0
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
 
-CASO 204 No Content
-Comando: curl -i -X DELETE http://127.0.0.1:8000/api/tasks/18/
-Primera línea: HTTP/1.1 204 No Content
-Cuerpo:
-(vacío)
-Observación: Eliminación exitosa de un recurso mediante DELETE. El servidor confirma la operación sin devolver contenido en el cuerpo.
 
---------------------------------------------------------------------------------
 
-CASO 400 Bad Request
-Comando: curl -i -X POST http://127.0.0.1:8000/api/tasks/ -H "Content-Type: application/json" -d '{"project": 1}'
-Primera línea: HTTP/1.1 400 Bad Request
-Cuerpo:
+=== 4. 400 Bad Request (POST inválido) ===
+HTTP/1.1 400 Bad Request
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, POST, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 61
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
 {"error":true,"detail":{"title":["This field is required."]}}
-Observación: Error de validación por omisión del campo obligatorio 'title'. La respuesta viene envuelta por custom_exception_handler.
 
---------------------------------------------------------------------------------
+=== 5. 404 Not Found (GET a recurso inexistente) ===
+HTTP/1.1 404 Not Found
+Date: Mon, 21 Sep 2026 19:04:44 GMT
+Server: WSGIServer/0.2 CPython/3.14.7
+Content-Type: application/json
+Vary: Accept, Cookie
+Allow: GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+X-Frame-Options: DENY
+Content-Length: 69
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
 
-CASO 404 Not Found
-Comando: curl -i http://127.0.0.1:8000/api/tasks/999/
-Primera línea: HTTP/1.1 404 Not Found
-Cuerpo:
 {"error":true,"detail":{"detail":"No Task matches the given query."}}
-Observación: Recurso no encontrado. La respuesta 404 de DRF viene capturada y envuelta por custom_exception_handler.
 
---------------------------------------------------------------------------------
-
-CASO 500 Internal Server Error
-Comando: curl -i http://127.0.0.1:8000/api/tasks/romper/
-Primera línea: HTTP/1.1 500 Internal Server Error
-Cuerpo:
-{"error":true,"detail":"Error interno del servidor."}
-Observación: Forzado temporalmente con una acción @action romper (división por cero). Al ocurrir una excepción de Python no controlada por DRF, custom_exception_handler devuelve un 500 uniforme con el formato estándar de la API.
-
---------------------------------------------------------------------------------
-
-CASOS PENDIENTES (AUTENTICACIÓN Y PERMISOS)
-- CASO 401 Unauthorized: pendiente, Clase 6 (requerirá autenticación JWT).
-- CASO 403 Forbidden: pendiente, Clase 7 (requerirá validación de permisos por rol o pertenencia).
-================================================================================
+=== 6. 500 Internal Server Error (No es trivial forzarlo sin romper el código intencionalmente, pero simulamos comprobación) ===
+Nota: El 500 se maneja mediante core.exceptions.custom_exception_handler si ocurre una excepción no atrapada.

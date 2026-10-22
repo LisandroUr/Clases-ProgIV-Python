@@ -1,11 +1,29 @@
-Clase_02_Programacion_IV.docx
-Clase_02_Programacion_IV_1.docx
-Clase_04_Programacion_IV.docx
-Clase_03_Programacion_IV.docx
-Clase_04b_Resolucion_Tarea_Clase04.docx
-Clase_09_Programacion_IV.docx
-Clase_05_Programacion_IV.docx
-Clase_06_Programacion_IV.docx
-Clase_08_Programacion_IV.docx
-Clase_07_Programacion_IV.docx
+# Virtualenv
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite / Database
+*.sqlite3
+
+# Logs
+*.log
+security.log
+import.log
+
+# Environment variables
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Documentos
 *.docx
+*.doc
+
